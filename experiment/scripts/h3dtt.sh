@@ -1,0 +1,2 @@
+curl --header "Content-Type: application/json" --request POST --data '{"VLANid":4,"VLANcfi":false,"VLANprio":4,"MACsrc":"00:00:00:00:00:03","MACdst":"01:0C:CD:01:00:04","APPID":4,"gocbRef":"MidiaCom3CFG/LLN0$GO$DTT","timeAllowedtoLive":1000,"datSet":"MidiaCom3CFG/LLN0$DTT","goID":"MidiaCom3","stNum":0,"rate":2.0,"test":false,"confRev":1,"ndsCom":false,"allData":[{"Type":"Boolean","Value":false}]}' http://127.0.0.1:8080/GOOSE_gen
+curl --header "Content-Type: application/json" --request POST --data '{"enable": true}' http://127.0.0.1:8080/GOOSE_gen/1
