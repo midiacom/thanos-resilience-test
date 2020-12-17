@@ -41,10 +41,33 @@ def plot(index, onos, ac, gui, ylabel):
     plt.grid(b=True, which='both', linestyle='dotted')
 
     ax.legend(loc="upper right")
-    #plt.show()
+    # plt.show()
     # plt.setp(ax.get_xmajorticklabels(), visible=False)
     plt.savefig("plots/plot_controller_" + ylabel + ".pdf", bbox_inches='tight')
     plt.clf()
+
+def plot_aggregated(index, cpu, ram):
+    plt.rcParams['figure.figsize'] = 16, 4
+    fig, ax = plt.subplots()
+
+    ax.xaxis.set_major_formatter(dates.DateFormatter('Day\n%d'))
+    ax.xaxis.set_minor_formatter(dates.DateFormatter('%Hh'))
+    ax.xaxis.set_major_locator(dates.DayLocator())
+    ax.xaxis.set_minor_locator(dates.HourLocator(byhour=[12]))
+    ax.set_xmargin(.0)
+    ax.set_ylabel("THANOS Resource Utilization (%)")
+
+    ax.plot(index, cpu, label='CPU')
+    ax.plot(index, ram, label='RAM')
+
+    plt.grid(b=True, which='both', linestyle='dotted')
+
+    ax.legend(loc="upper right")
+    #plt.show()
+    plt.savefig("plots/plot_controller_agg_resource.pdf", bbox_inches='tight')
+    plt.clf()
+
+
 
 df = pd.read_csv("logs/processed-teste2.csv", sep=";", header=0)
 df['GUI-CPU%'] = df['GUI (app)-CPU%'] + df['GUI (java,GradleWrapperMain)-CPU%'] + df['GUI (java,gradle)-CPU%']
@@ -55,6 +78,10 @@ df['AC-MEM%'] = df['AC (app)-MEM%'] + df['AC (sudo,app)-MEM%']
 
 df['ONOS-CPU%'] = df['ONOS (karaf,java)-CPU%'] + df['ONOS (karaf,shell)-CPU%'] + df['ONOS (onos-service,shell)-CPU%']
 df['ONOS-MEM%'] = df['ONOS (karaf,java)-MEM%'] + df['ONOS (karaf,shell)-MEM%'] + df['ONOS (onos-service,shell)-MEM%']
+
+df['ALL-CPU%'] = df['ONOS-CPU%'] + df['AC-CPU%'] + df['GUI-CPU%']
+df['ALL-MEM%'] = df['ONOS-MEM%'] + df['AC-MEM%'] + df['GUI-MEM%']
+
 #print df.columns.values.tolist()
 print df[['ONOS-CPU%', 'ONOS (karaf,java)-CPU%', 'ONOS (karaf,shell)-CPU%', 'ONOS (onos-service,shell)-CPU%']]
 print df[['ONOS-MEM%', 'ONOS (karaf,java)-MEM%', 'ONOS (karaf,shell)-MEM%', 'ONOS (onos-service,shell)-MEM%']]
@@ -76,5 +103,7 @@ samples_to_plot = len(df['timestamp'])
 
 plot(dateList[:samples_to_plot], df['ONOS-CPU%'].iloc[:samples_to_plot], df['AC-CPU%'].iloc[:samples_to_plot], df['GUI-CPU%'].iloc[:samples_to_plot], "CPU Usage (%)")
 plot(dateList[:samples_to_plot], df['ONOS-MEM%'].iloc[:samples_to_plot], df['AC-MEM%'].iloc[:samples_to_plot], df['GUI-MEM%'].iloc[:samples_to_plot], "MEM Usage (%)")
+
+plot_aggregated(dateList[:samples_to_plot],df['ALL-CPU%'].iloc[:samples_to_plot], df['ALL-MEM%'].iloc[:samples_to_plot])
 
 # plot(dateList[:samples_to_plot], df['GUI (app)-MEM%'].iloc[:samples_to_plot], df['GUI (java,GradleWrapperMain)-MEM%'].iloc[:samples_to_plot], df['GUI (java,gradle)-MEM%'].iloc[:samples_to_plot], "MEM Usage (%)")
