@@ -8,16 +8,16 @@ import datetime
 import matplotlib.ticker as ticker
 
 def plot(index, onos, ac, gui, ylabel):
-    plt.rcParams['figure.figsize'] = 16, 4
+    plt.rcParams['figure.figsize'] = 10, 4
     fig, ax = plt.subplots()
 
-    ax.xaxis.set_major_formatter(dates.DateFormatter('Day\n%d'))
+    ax.xaxis.set_major_formatter(dates.DateFormatter('Dia\n%d'))
     ax.xaxis.set_minor_formatter(dates.DateFormatter('%Hh'))
     ax.xaxis.set_major_locator(dates.DayLocator())
     #ax.xaxis.set_minor_locator(dates.HourLocator(byhour=[6, 12, 18]))
     ax.xaxis.set_minor_locator(dates.HourLocator(byhour=[12]))
 
-    ax.set_xmargin(.0)
+    ax.set_xmargin(.001)
 
     ax.set_ylabel(ylabel)
 
@@ -30,9 +30,14 @@ def plot(index, onos, ac, gui, ylabel):
 
     #ax.xaxis.set_ticks(np.arange(0, len(index), len(index)/10))
 
+    onos = onos.rolling(window=10).mean()
+    ac = ac.rolling(window=10).mean()
+    gui = gui.rolling(window=10).mean()
+
     ax.plot(index, onos, label='ONOS')
     ax.plot(index, ac, label='AC')
     ax.plot(index, gui, label='GUI')
+    
 
     #ax.plot(index, onos, label='app')
     #ax.plot(index, ac, label='gradle-wrapper')
@@ -47,20 +52,25 @@ def plot(index, onos, ac, gui, ylabel):
     plt.clf()
 
 def plot_aggregated(index, cpu, ram):
-    plt.rcParams['figure.figsize'] = 16, 4
+    plt.rcParams['figure.figsize'] = 10, 4
     fig, ax = plt.subplots()
 
-    ax.xaxis.set_major_formatter(dates.DateFormatter('Day\n%d'))
+    ax.xaxis.set_major_formatter(dates.DateFormatter('Dia\n%d'))
     ax.xaxis.set_minor_formatter(dates.DateFormatter('%Hh'))
     ax.xaxis.set_major_locator(dates.DayLocator())
     ax.xaxis.set_minor_locator(dates.HourLocator(byhour=[12]))
-    ax.set_xmargin(.0)
-    ax.set_ylabel("THANOS Resource Utilization (%)")
+    ax.set_xmargin(.001)
+    
+    ax.set_ylabel("Uso de recursos do THANOS (%)")
+
+    cpu = cpu.rolling(window=10).mean()
+    ram = ram.rolling(window=10).mean()
 
     ax.plot(index, cpu, label='CPU')
     ax.plot(index, ram, label='RAM')
 
     plt.grid(b=True, which='both', linestyle='dotted')
+    plt.ylim(top=100)
 
     ax.legend(loc="upper right")
     #plt.show()
@@ -69,7 +79,7 @@ def plot_aggregated(index, cpu, ram):
 
 
 
-df = pd.read_csv("logs/processed-teste2.csv", sep=";", header=0)
+df = pd.read_csv("logs/processed-teste3.csv", sep=";", header=0)
 df['GUI-CPU%'] = df['GUI (app)-CPU%'] + df['GUI (java,GradleWrapperMain)-CPU%'] + df['GUI (java,gradle)-CPU%']
 df['GUI-MEM%'] = df['GUI (app)-MEM%'] + df['GUI (java,GradleWrapperMain)-MEM%'] + df['GUI (java,gradle)-MEM%']
 
@@ -101,8 +111,8 @@ samples_to_plot = len(df['timestamp'])
 
 #plot(dateList[:10], df['ONOS-CPU%'].iloc[:10], df['ONOS-MEM%'].iloc[:10], "ONOS Resource Utilization")
 
-plot(dateList[:samples_to_plot], df['ONOS-CPU%'].iloc[:samples_to_plot], df['AC-CPU%'].iloc[:samples_to_plot], df['GUI-CPU%'].iloc[:samples_to_plot], "CPU Usage (%)")
-plot(dateList[:samples_to_plot], df['ONOS-MEM%'].iloc[:samples_to_plot], df['AC-MEM%'].iloc[:samples_to_plot], df['GUI-MEM%'].iloc[:samples_to_plot], "MEM Usage (%)")
+plot(dateList[:samples_to_plot], df['ONOS-CPU%'].iloc[:samples_to_plot], df['AC-CPU%'].iloc[:samples_to_plot], df['GUI-CPU%'].iloc[:samples_to_plot], "Uso de CPU (%)")
+plot(dateList[:samples_to_plot], df['ONOS-MEM%'].iloc[:samples_to_plot], df['AC-MEM%'].iloc[:samples_to_plot], df['GUI-MEM%'].iloc[:samples_to_plot], "Uso de RAM (%)")
 
 plot_aggregated(dateList[:samples_to_plot],df['ALL-CPU%'].iloc[:samples_to_plot], df['ALL-MEM%'].iloc[:samples_to_plot])
 

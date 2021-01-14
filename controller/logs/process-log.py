@@ -74,7 +74,7 @@ def process_command(command):
             return "GUI (app)"
         elif "taesa-controller-gui/gradle" in command:
             return "GUI (java,GradleWrapperMain)"
-        elif "root/.gradle/wrapper" in command:
+        elif ".gradle/wrapper" in command:
             return "GUI (java,gradle)"
         elif "karaf." in command:
             return "ONOS (karaf,java)"
@@ -153,7 +153,7 @@ def processData(file):
         for entry in entries:
             wr.writerow(entry.toRow())
 
-file_name = "teste2"
+file_name = "teste3"
 processData(file_name)
 
 # Year, Month, Day, Hour, Minute, AP, Number os Stations
