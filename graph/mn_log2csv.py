@@ -1,7 +1,7 @@
 import pandas as pd
 from datetime import datetime
 
-for folder in [1, 2]:
+for folder in [1, 2, 3]:
     current_switch = {}
     counter = 1
     for switch in ['s1', 's2', 's3', 's4']:
